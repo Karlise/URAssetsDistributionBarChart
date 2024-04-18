@@ -1,27 +1,55 @@
-
-import { Bar } from 'react-chartjs-2';
-import {
-    Chart as ChartJS,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend
-} from 'chart.js';
+import React from 'react';
+import Chart from 'react-apexcharts';
 import { ChartDataType, ChartOptionsType } from './models';
-
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface HorizontalBarChartProps {
     data: ChartDataType;
     options: ChartOptionsType;
 }
 
-const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({data, options}) => {
+const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({ data, options }) => {
+    const series = data.datasets.map(dataset => ({
+        name: dataset.label,
+        data: dataset.data
+    }));
+
+    const paddingLeft = typeof options.layout?.padding === 'object' ? options.layout.padding.left || '' : '';
+
+    const chartOptions = {
+        chart: {
+            type: 'bar',
+            toolbar: {
+                show: false
+            }
+        },
+        xaxis: {
+            categories: data.labels,
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yaxis: {
+            title: {
+                text: options.indexAxis === 'y' ? paddingLeft : ''
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: options.indexAxis === 'y'
+            }
+        },
+        legend: {
+            show: true
+        }
+    } as ApexCharts.ApexOptions;
+
     return (
-        <div style={{backgroundColor: '#fff', borderRadius: 20, padding: 20}}>
-            <Bar data={data} options={options}></Bar>
+        <div style={{ backgroundColor: '#fff', borderRadius: 20, padding: 20 }}>
+            <Chart options={chartOptions} series={series} type="bar" height={350} />
         </div>
-    )
+    );
 }
+
 export default HorizontalBarChart;
